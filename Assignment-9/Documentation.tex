@@ -1,0 +1,297 @@
+\documentclass[11pt]{article}
+\usepackage{natbib,mybigpackage}
+\usepackage{algorithm}
+%\usepackage{program}
+%\usepackage{algpseudocode}
+\usepackage{algorithmic}
+\usepackage{listings}
+\def\xbf{\mathbf{x}}
+\def\zbf{\mathbf{z}}
+\def\xibf{\mathbf{\xi}}
+\title{Documentation: Assignment 9}
+\author{Abhinav Gupta -- 150123001}
+\begin{document}
+\titlepage
+\newpage
+\begin{enumerate}
+\item[Q 1] Multivariate normal (Make empirical contour plots based on above generated samples.)
+\end{enumerate}
+\noindent{Code: R}
+\begin{lstlisting}
+library(MASS)	
+x2<-c()
+count<-1000
+a<- c(-0.25,0,0.25)
+for(i in a){
+	sigma<-matrix(c(1,2*i,2*i,4),nrow=2)
+	mean<-matrix(c(5,8),nrow=2)
+	z1<-rnorm(count)
+	z2<-rnorm(count)
+	x1<-mean[1,1]+(sigma[1,1]^.5)*z1
+	x2<-mean[2,1]+(i*sigma[2,2]^.5)*z1+(((1-(i^2))^.5)*(sigma[2,2]^.5))*z2
+	mean_final<-matrix(c(mean(x1),mean(x2)),nrow=2)
+	sigma_final<-matrix(c(var(x1),cov(x1,x2),cov(x1,x2),var(x2)),nrow=2)
+	cat("\nMean Matrix is: \n")
+	cat(mean_final[1,],"\n")
+	cat(mean_final[2,],"\n")
+	cat("\nSigma Matrix is: \n")
+	cat(sigma_final[1,],"\n")
+	cat(sigma_final[2,],"\n")	
+	z<-kde2d(x1,x2)
+	png(paste("question1-a: ",toString(i),".png",sep=""))
+	filled.contour(z)	
+}
+
+\end{lstlisting}
+\noindent{\textbf{Output}:}\
+
+Mean Matrix is: \
+
+4.97803 \
+
+7.848047 \
+
+
+Sigma Matrix is: \
+
+0.9939227 -0.516966\
+ 
+-0.516966 4.147666 \
+
+
+Mean Matrix is: \
+
+4.978293 \
+
+7.92619 \
+
+
+Sigma Matrix is: \
+
+0.9829786 -0.1517543 \
+
+-0.1517543 4.142172\
+ 
+
+Mean Matrix is: \
+
+5.004119 \
+
+8.065482 \
+
+
+Sigma Matrix is: \
+
+1.010186 0.4767248 \
+
+0.4767248 3.81206 \
+
+
+\noindent{\textbf{Observation}:}
+\textbf{Graph: a= -0.25 : }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X1]{\includegraphics[width=.6\textwidth]{{question1-a=-0.25}.png}}\\
+\end{figure}
+\textbf{Graph: a= 0 : }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X1]{\includegraphics[width=.6\textwidth]{{question1-a=0}.png}}\\
+\end{figure}
+\textbf{Graph: a= 0.25 : }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X1]{\includegraphics[width=.6\textwidth]{{question1-a=0.25}.png}}\\
+\end{figure}
+%----------------------------------------------------------------------------------------------------------
+\newpage
+\begin{enumerate}
+\item[Q 2] Also, plot the actual and empirical marginal cdfs of X1 and X2.
+\end{enumerate}
+\noindent{Code: R}
+\begin{lstlisting}
+library(MASS)
+x2<-c()
+count<-1000
+a<- c(-0.25,0,0.25)
+for(i in a){
+  sigma<-matrix(c(1,2*i,2*i,4),nrow=2)
+  mean<-matrix(c(5,8),nrow=2)
+  z1<-rnorm(count)
+  z2<-rnorm(count)
+  x1<-mean[1,1]+(sigma[1,1]^.5)*z1
+  x2<-mean[2,1]+(i*sigma[2,2]^.5)*z1+(((1-(i^2))^.5)*(sigma[2,2]^.5))*z2
+  mean_final<-matrix(c(mean(x1),mean(x2)),nrow=2)
+  sigma_final<-matrix(c(var(x1),cov(x1,x2),cov(x1,x2),var(x2)),nrow=2)
+  cat("\nMean Matrix is: \n")
+  cat(mean_final[1,],"\n")
+  cat(mean_final[2,],"\n")
+  cat("\nSigma Matrix is: \n")
+  cat(sigma_final[1,],"\n")
+  cat(sigma_final[2,],"\n")
+  absolute<-mvrnorm(count,mean,sigma)		
+  string<-paste("question2- X1 - a: ",toString(i),".png",sep="")
+  png(string)
+  plot(ecdf(absolute[,1]),col="green",main="Green is actual and Red is emperical ")
+  par(new=TRUE)
+  plot(ecdf(x1),col="red")
+  string<-paste("question2- X2 - a: ",toString(i),".png",sep="")
+  png(string)
+  plot(ecdf(absolute[,2]),col="green",main="Green is actual and Red is emperical ")
+  par(new=TRUE)
+  plot(ecdf(x2),col="red")
+  
+}
+
+\end{lstlisting}
+\noindent{\textbf{Output}:}\
+
+
+Mean Matrix is: \
+
+4.959824 \
+
+7.949048 
+\
+
+Sigma Matrix is: \
+
+0.9955896 -0.5380006 \
+
+-0.5380006 4.272224 \
+
+
+Mean Matrix is: \
+
+5.04837 \
+
+8.169231 \
+
+
+Sigma Matrix is: \
+
+0.9958008 0.1126358 \
+
+0.1126358 4.13406 \
+
+
+Mean Matrix is: \
+
+4.993082\
+ 
+8.052734 \
+
+
+Sigma Matrix is: \
+
+1.044344 0.4855019\
+ 
+0.4855019 4.331652 \
+\newpage
+
+\noindent{\textbf{Observation}:}
+\textbf{Graph: a= -0.25 : }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X1]{\includegraphics[width=.6\textwidth]{{question2- X1 - a=0.25}.png}}\\
+\end{figure}
+\textbf{Graph: a= -0.25: }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X2]{\includegraphics[width=.6\textwidth]{{question2- X2 - a=-0.25}.png}}\\
+\end{figure}
+\textbf{Graph: a= 0 : }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X1]{\includegraphics[width=.6\textwidth]{{question2- X1 - a=0}.png}}\\
+\end{figure}
+\textbf{Graph: a= 0: }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X2]{\includegraphics[width=.6\textwidth]{{question2- X2 - a=0}.png}}\\
+\end{figure}
+\textbf{Graph: a= 0.25 : }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X1]{\includegraphics[width=.6\textwidth]{{question2- X1 - a=0.25}.png}}\\
+\end{figure}
+\textbf{Graph: a= 0.25: }\
+\begin{figure}[H]
+  \centering
+ \subfloat[X2]{\includegraphics[width=.6\textwidth]{{question2- X2 - a=0.25}.png}}\\
+\end{figure}
+%---------------------------------------------------------------------------
+\newpage
+\begin{enumerate}
+\item[Q 3] generating a bivariate normal with the help of conditional distributions.
+\end{enumerate}
+\noindent{Code: R}
+\begin{lstlisting}
+x2<-c()
+count<-1000
+a<- c(-0.25,0,0.25)
+for(i in a){
+	sigma<-matrix(c(1,2*i,2*i,4),nrow=2)
+	mean<-matrix(c(5,8),nrow=2)
+	z1<-rnorm(count)
+	z2<-rnorm(count)
+	x2<-mean[2,1]+(sigma[2,2]^.5)*z1
+	mean_intermediate<-mean[1,1]+i*((sigma[1,1]^.5)/(sigma[2,2]^.5))*(x2-mean[2,1])
+	sd<-sigma[1,1]*(1-i^2)^.5
+	x1<-mean_intermediate+(sd^.5)*z2
+	mean_final<-matrix(c(mean(x1),mean(x2)),nrow=2)
+	sigma_final<-matrix(c(var(x1),cov(x1,x2),cov(x1,x2),var(x2)),nrow=2)
+	cat("\nMean Matrix is: \n")
+	cat(mean_final[1,],"\n")
+	cat(mean_final[2,],"\n")
+	cat("\nSigma Matrix is: \n")
+	cat(sigma_final[1,],"\n")
+	cat(sigma_final[2,],"\n")
+}
+
+\end{lstlisting}
+\noindent{\textbf{Output}:}\
+
+
+Mean Matrix is: \
+
+4.989924 \
+
+7.919084 \
+
+
+Sigma Matrix is: \
+
+1.008933 -0.4903051 \
+
+-0.4903051 3.984307 \
+
+
+Mean Matrix is: \
+
+4.983557 \
+
+8.013008 \
+
+
+Sigma Matrix is: \
+
+0.9888262 -0.04890436 \
+
+-0.04890436 3.851085 \
+
+
+Mean Matrix is: \
+
+4.980537 \
+
+8.022619 \
+
+
+Sigma Matrix is: \
+
+0.9542868 0.4811441 \
+
+0.4811441 3.808051\
+
+\end{document}

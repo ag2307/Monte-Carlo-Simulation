@@ -1,0 +1,129 @@
+\documentclass[11pt]{article}
+\usepackage{natbib,mybigpackage}
+\usepackage{algorithm}
+%\usepackage{program}
+%\usepackage{algpseudocode}
+\usepackage{algorithmic}
+\usepackage{listings}
+\def\xbf{\mathbf{x}}
+\def\zbf{\mathbf{z}}
+\def\xibf{\mathbf{\xi}}
+\usepackage{lmodern}% http://ctan.org/pkg/lm
+\title{Documentation: Assignment 11}
+\author{Abhinav Gupta -- 150123001}
+\begin{document}
+\titlepage
+\newpage
+\begin{enumerate}
+\item[Q 1]  The process \(S(t)\) is a GBM with drift parameter $\mu$ , volatility parameter $\sigma$, and initial value \(S(0)\) if
+\[S(t)=S(0)exp([\mu-\sigma^2/2]t+\sigma W(t))\] if where \(W(t)\) is a standard BM. As with the case of a BM, we have a simple recursive procedure to simulate a GBM at \(0=t_0<t_1<...t_n\) as \[S(t_{i+1})=S(t_i)exp([\mu-{\sigma^2}/2](t_{i+1}-t_i)+\sigma \sqrt{t_{i+1}-t_i} Z_{i+1})\] where \(Z_1,Z_2,Z_3,....,Z_n\) are independent \(N(0,1)\) variates. In the interval [0,5], taking both positive and negative values for $\mu$ and for at least two different values of $\sigma^2$, simulate and plot at least 10 sample paths of the GBM (taking sufficiently large number of sample points for each path). Also, by generating a large number of sample paths, compare the actual and simulated distributions of $S(5)$.Calculate expectation and variance of $S(5)$ and match it with the theoretical values.
+\end{enumerate}
+\noindent{Code without S(5) values and plotting graphs: R}
+\begin{lstlisting}
+paths<-10
+count<-5000
+interval<-5/count
+sd<-c(0.3,0.4)
+mean<-c(-0.06,0.06)
+
+for(x in sd){
+for(y in mean){
+main_sample<-matrix(0,nrow=(count+1), ncol=paths)
+for(i in 1:paths){
+main_sample[1,i]<-5
+for(j in 2:(count+1)){
+main_sample[j,i]<-main_sample[j-1,i]*exp((y-(x^2)/2)*interval+x*rnorm(1)*(interval)^.5)
+}
+}
+string<-paste("question1-mean=",toString(y),"variance=",toString(x^2),".png",sep="")
+png(string)
+matplot(main_sample,xlab="Time",ylab="Path")
+}																				
+}
+\end{lstlisting}
+\newpage
+\textbf{Graph: }\
+\begin{figure}[H]
+Mean= 0.06 and Variance= 0.09\\
+\centering
+\subfloat[X1]{\includegraphics[width=.6\textwidth]{{question1-mean=0.06variance=0.09}.png}}
+\end{figure}
+\begin{figure}[H]
+Mean= -0.06 and Variance= 0.09\\
+\centering
+\subfloat[X1]{\includegraphics[width=.6\textwidth]{{question1-mean=-0.06variance=0.16}.png}}
+\end{figure}
+\begin{figure}[H]
+Mean= 0.06 and Variance= 0.16\\
+\centering
+\subfloat[X1]{\includegraphics[width=.6\textwidth]{{question1-mean=0.06variance=0.09}.png}}
+\end{figure}
+\begin{figure}[H]
+Mean= -0.06 and Variance= 0.16\\
+\centering
+\subfloat[X1]{\includegraphics[width=.6\textwidth]{{question1-mean=-0.06variance=0.16}.png}}
+\end{figure}
+%----------------------------------------------------------------------------------------------------------
+\newpage
+\noindent{Code with expected and observed value of S(5): R}
+\begin{lstlisting}
+paths<-1000
+count<-5000
+interval<-5/count
+sd<-c(0.3,0.4)
+mean<-c(-0.06,0.06)
+exp_mean<-function(s0,mean){
+	return(s0*exp(mean*5))
+}
+exp_variance<-function(s0,mean,sd){
+	return((s0^2)*exp(2*mean*5)*(exp(5*sd^2)-1))
+}
+for(x in sd){
+for(y in mean){
+main_sample<-matrix(0,nrow=(count+1), ncol=paths)
+for(i in 1:paths){
+main_sample[1,i]<-5
+for(j in 2:(count+1)){
+main_sample[j,i]<-main_sample[j-1,i]*exp((y-(x^2)/2)*interval+x*rnorm(1)*(interval)^.5)
+}
+}
+cat("Mean is: ",y,"\n")
+cat("Variance is: ",x,"\n")
+cat("Theoretical Expectation of S(5): ",exp_mean(5,y),"\n")
+cat("Observed Expectation of S(5): ",mean(main_sample[5001,]),"\n")
+cat("Theoretical Variance of S(5): ",exp_variance(5,y,x),"\n")
+cat("Observed Variance of S(5): ",var(main_sample[5001,]),"\n")
+}	
+cat("\n")																			
+}
+\end{lstlisting}
+\noindent{\textbf{Output}:}\\
+Mean is:  -0.06 \\
+Variance is:  0.3 \\
+Theoretical Expectation of S(5):  3.704091 \\
+Observed Expectation of S(5):  3.748786 \\
+Theoretical Variance of S(5):  7.797409\\ 
+Observed Variance of S(5):  8.629581 \\
+\\
+Mean is:  0.06\\ 
+Variance is:  0.3\\ 
+Theoretical Expectation of S(5):  6.749294\\ 
+Observed Expectation of S(5):  6.876775\\ 
+Theoretical Variance of S(5):  25.88831\\ 
+Observed Variance of S(5):  27.23867\\ 
+\\
+Mean is:  -0.06\\ 
+Variance is:  0.4\\ 
+Theoretical Expectation of S(5):  3.704091 \\
+Observed Expectation of S(5):  3.419998 \\
+Theoretical Variance of S(5):  16.81478 \\
+Observed Variance of S(5):  11.90325 \\
+\\
+Mean is:  0.06\\ 
+Variance is:  0.4\\ 
+Theoretical Expectation of S(5):  6.749294\\ 
+Observed Expectation of S(5):  6.781992\\ 
+Theoretical Variance of S(5):  55.82703\\ 
+Observed Variance of S(5):  58.36891 \\
+\\
+\end{document}

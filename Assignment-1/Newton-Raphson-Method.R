@@ -15,6 +15,10 @@ diff<-function(x){6*x-exp(x)}
 newton<-function(f,diff,x0,tolerance){
 	x1=0
 	while (TRUE) {
+	if (diff(x0) < 1e-10){
+		print("Vertical asymptote")
+		break
+	}
 	# Applying Newton-Raphson Method to approximate following points
 	x1 = (x0 - (f(x0) / diff(x0)))
 	# To check that the root is within tolerance
